@@ -1,4 +1,9 @@
-import os, telegram, time, requests, logging, sys
+import os 
+import telegram 
+from time import time
+import requests
+import logging 
+import sys
 from dotenv import load_dotenv
 import exceptions
 
@@ -17,7 +22,7 @@ PRACTICUM_TOKEN: str = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN: str = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID: str = os.getenv('TELEGRAM_CHAT_ID')
 
-RETRY_TIME: int = 6
+RETRY_TIME: int = 600
 ENDPOINT: str = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS: dict = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 
@@ -30,12 +35,12 @@ HOMEWORK_STATUSES: dict = {
 
 
 def check_tokens() -> bool:
-    '''Проверяет наличие переменных окружения'''
+    """Проверяет наличие переменных окружения"""
     if PRACTICUM_TOKEN is None:
         message = (
-            'Отсутствует переменная окружения: '
-            '"PRACTICUM_TOKEN". Программа принудительно остановлена.'
-            )
+            'Отсутствует переменная окружения: "PRACTICUM_TOKEN". '
+            'Программа принудительно остановлена.'
+        )
         logging.critical(message)
         return False
 
@@ -43,7 +48,7 @@ def check_tokens() -> bool:
         message = (
             'Отсутствует переменная окружения: '
             'TELEGRAM_TOKEN. Программа принудительно остановлена.'
-            )
+        )
         logging.critical(message)
         return False
 
@@ -51,7 +56,7 @@ def check_tokens() -> bool:
         message = (
             'Отсутствует переменная окружения: '
             'TELEGRAM_CHAT_ID. Программа принудительно остановлена.'
-            )
+        )
         logging.critical(message)
         return False
 
@@ -59,9 +64,10 @@ def check_tokens() -> bool:
 
 
 def get_api_answer(timestamp):
-    '''Делает запрос к API Яндекс.Практикума о наличии обновлений  
-    статусов домашних работ от переданного момента времени'''
-    
+    """
+    Делает запрос к API Яндекс.Практикума о наличии обновлений 
+    статусов домашних работ от переданного момента времени.
+    """
     params = {'from_date': timestamp}
 
     homework_statuses = requests.get(url=ENDPOINT,
@@ -77,8 +83,10 @@ def get_api_answer(timestamp):
     return homework_statuses.json()
 
 def check_response(response):
-    '''Проверяет валидность ответа API и возвращает список домашних 
-    работ, чей статус был изменен'''
+    """
+    Проверяет валидность ответа API и возвращает список домашних 
+    работ, чей статус был изменен.
+    """
     if not isinstance(response, dict):
         raise TypeError('Данные, переданные API, не являются словарем.')
     if response == {}:
@@ -89,7 +97,7 @@ def check_response(response):
         raise KeyError(
             'В словаре, переданном API отсутствует ключ "homeworks".'
         )
-    
+
     homeworks = response.get('homeworks')
     if not isinstance(homeworks, list):
         raise exceptions.HomeworkTypeError(
@@ -101,9 +109,9 @@ def check_response(response):
 
 
 def parse_status(homework):
-    '''Формирует сообщение о новом статусе домашней работы'''
-    if ('homework_name' not in homework or
-        'status' not in homework):
+    """Формирует сообщение о новом статусе домашней работы"""
+    if ('homework_name' not in homework
+        or 'status' not in homework):
         raise KeyError(
             'В словаре домашней работы отсутствуют нобходимые ключи.'
         )
@@ -121,7 +129,7 @@ def parse_status(homework):
 
 
 def send_message(bot, msg):
-    '''Отправляет в telegram сообщение о смене статуса домашней работы'''
+    """Отправляет в telegram сообщение о смене статуса домашней работы"""
     try:
         bot.send_message(TELEGRAM_CHAT_ID, msg)
     except Exception:
@@ -146,22 +154,22 @@ def main():
             response = get_api_answer(current_timestamp)
             current_timestamp = int(time.time())
             homework = check_response(response)
-            message=parse_status(homework)
+            message = parse_status(homework)
 
         except exceptions.NoNewStatusExc:
             msg = 'Статус домашней работы не изменен.'
             logging.info(msg)
             error_msg_sent = False
             time.sleep(RETRY_TIME)
-        
+
         except Exception as error:
             msg = f'Сбой в работе программы: {error}'
-            logging.error(msg)  
+            logging.error(msg)
             if not error_msg_sent:
                 send_message(bot=bot, msg=msg)
                 error_msg_sent = True
             time.sleep(RETRY_TIME)
-    
+
         else:
             error_msg_sent = False
             send_message(bot=bot, msg=message)
