@@ -1,8 +1,8 @@
-import os 
-import telegram 
+import os
+import telegram
 from time import time
 import requests
-import logging 
+import logging
 import sys
 from dotenv import load_dotenv
 import exceptions
@@ -35,7 +35,7 @@ HOMEWORK_STATUSES: dict = {
 
 
 def check_tokens() -> bool:
-    """Проверяет наличие переменных окружения"""
+    """Проверяет наличие переменных окружения."""
     if PRACTICUM_TOKEN is None:
         message = (
             'Отсутствует переменная окружения: "PRACTICUM_TOKEN". '
@@ -64,8 +64,7 @@ def check_tokens() -> bool:
 
 
 def get_api_answer(timestamp):
-    """
-    Делает запрос к API Яндекс.Практикума о наличии обновлений 
+    """Делает запрос к API Яндекс.Практикума о наличии обновлений
     статусов домашних работ от переданного момента времени.
     """
     params = {'from_date': timestamp}
@@ -82,9 +81,10 @@ def get_api_answer(timestamp):
         )
     return homework_statuses.json()
 
+
 def check_response(response):
     """
-    Проверяет валидность ответа API и возвращает список домашних 
+    Проверяет валидность ответа API и возвращает список домашних
     работ, чей статус был изменен.
     """
     if not isinstance(response, dict):
@@ -110,8 +110,7 @@ def check_response(response):
 
 def parse_status(homework):
     """Формирует сообщение о новом статусе домашней работы"""
-    if ('homework_name' not in homework
-        or 'status' not in homework):
+    if ('homework_name' not in homework or 'status' not in homework):
         raise KeyError(
             'В словаре домашней работы отсутствуют нобходимые ключи.'
         )
