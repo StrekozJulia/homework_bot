@@ -84,7 +84,7 @@ def get_api_answer(timestamp):
 
 
 def check_response(response):
-    """Проверяет валидность ответа API. 
+    """Проверяет валидность ответа API.
     Возвращает список домашних работ, чей статус был изменен.
     """
     if not isinstance(response, dict):
