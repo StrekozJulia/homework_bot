@@ -64,8 +64,9 @@ def check_tokens() -> bool:
 
 
 def get_api_answer(timestamp):
-    """Делает запрос к API Яндекс.Практикума о наличии обновлений
-    статусов домашних работ от переданного момента времени.
+    """Делает запрос к API Яндекс.
+    Практикума о наличии обновлений статусов домашних работ
+    от переданного момента времени.
     """
     params = {'from_date': timestamp}
 
@@ -83,9 +84,8 @@ def get_api_answer(timestamp):
 
 
 def check_response(response):
-    """
-    Проверяет валидность ответа API и возвращает список домашних
-    работ, чей статус был изменен.
+    """Проверяет валидность ответа API и возвращает список домашних работ,
+    чей статус был изменен.
     """
     if not isinstance(response, dict):
         raise TypeError('Данные, переданные API, не являются словарем.')
@@ -109,7 +109,7 @@ def check_response(response):
 
 
 def parse_status(homework):
-    """Формирует сообщение о новом статусе домашней работы"""
+    """Формирует сообщение о новом статусе домашней работы."""
     if ('homework_name' not in homework or 'status' not in homework):
         raise KeyError(
             'В словаре домашней работы отсутствуют нобходимые ключи.'
@@ -128,7 +128,7 @@ def parse_status(homework):
 
 
 def send_message(bot, msg):
-    """Отправляет в telegram сообщение о смене статуса домашней работы"""
+    """Отправляет в telegram сообщение о смене статуса домашней работы."""
     try:
         bot.send_message(TELEGRAM_CHAT_ID, msg)
     except Exception:
