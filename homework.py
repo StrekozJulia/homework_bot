@@ -88,16 +88,14 @@ def get_api_answer(timestamp):
         status_code = response.status_code
         if status_code != HTTPStatus.OK:
             raise exceptions.EndpointUnavaliableExc(
-            f'Эндпоинт [{ENDPOINT}] недоступен. '
-            f'Параметры запроса: {requests_params}'
-            f'Код ответа API: {status_code}. '
-            f'{response.reason}. {response.text}'
+                f'Эндпоинт [{ENDPOINT}] недоступен. '
+                f'Параметры запроса: {requests_params}'
+                f'Код ответа API: {status_code}. '
+                f'{response.reason}. {response.text}'
             )
         else:
             homework_statuses = response.json()
             return homework_statuses
-        
-    
 
 
 def check_response(response):
