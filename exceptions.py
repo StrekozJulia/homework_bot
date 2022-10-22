@@ -4,6 +4,9 @@ class NoTokenException(Exception):
 class EndpointUnavaliableExc(Exception):
     pass
 
+class EndpointRequestError(Exception):
+    pass
+
 class HomeworkTypeError(Exception):
     pass
 
@@ -16,5 +19,8 @@ class MessageNotSentExc(Exception):
 class UnknownStatusExc(Exception):
     pass
 
-class NoNewStatusExc(Exception):
+class SendMessageError(Exception):
+    pass
+
+class RequestParamError(Exception):
     pass
