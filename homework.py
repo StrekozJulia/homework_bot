@@ -132,7 +132,8 @@ def parse_status(homework):
     if ('homework_name' not in homework or 'status' not in homework):
         raise KeyError(
             'В словаре домашней работы отсутствуют нобходимые ключи: '
-            f'"homework_name", "status". Присутствуют ключи: {homework.keys()}.'
+            '"homework_name", "status". Присутствуют ключи: '
+            f'{homework.keys()}.'
         )
     homework_name = homework.get('homework_name')
     homework_status = homework.get('status')
