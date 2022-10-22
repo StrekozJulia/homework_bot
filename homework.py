@@ -84,18 +84,17 @@ def get_api_answer(timestamp):
             f'Ошибка при выполнении запроса к API. '
             f'Параметры запроса: {requests_params}. {error}'
         )
+    status_code = response.status_code
+    if status_code != HTTPStatus.OK:
+        raise exceptions.EndpointUnavaliableExc(
+            f'Эндпоинт [{ENDPOINT}] недоступен. '
+            f'Параметры запроса: {requests_params}'
+            f'Код ответа API: {status_code}. '
+            f'{response.reason}. {response.text}'
+        )
     else:
-        status_code = response.status_code
-        if status_code != HTTPStatus.OK:
-            raise exceptions.EndpointUnavaliableExc(
-                f'Эндпоинт [{ENDPOINT}] недоступен. '
-                f'Параметры запроса: {requests_params}'
-                f'Код ответа API: {status_code}. '
-                f'{response.reason}. {response.text}'
-            )
-        else:
-            homework_statuses = response.json()
-            return homework_statuses
+        homework_statuses = response.json()
+        return homework_statuses
 
 
 def check_response(response):
@@ -115,12 +114,14 @@ def check_response(response):
     if 'homeworks' not in response:
         raise KeyError(
             'В словаре, переданном API отсутствует ключ "homeworks".'
+            f'Присутствуют ключи: {response.keys()}'
         )
 
     homeworks = response.get('homeworks')
     if not isinstance(homeworks, list):
         raise exceptions.HomeworkTypeError(
-            'По ключу "homeworks" не найден список.'
+            'По ключу "homeworks" не найден список. Тип данных: '
+            f'{type(homeworks)}'
         )
     return homeworks
 
@@ -130,14 +131,16 @@ def parse_status(homework):
     logging.info('Получены обновления. Определяем новый статус работы...')
     if ('homework_name' not in homework or 'status' not in homework):
         raise KeyError(
-            'В словаре домашней работы отсутствуют нобходимые ключи.'
+            'В словаре домашней работы отсутствуют нобходимые ключи: '
+            f'"homework_name", "status". Присутствуют ключи: {homework.keys()}.'
         )
     homework_name = homework.get('homework_name')
     homework_status = homework.get('status')
 
     if homework_status not in HOMEWORK_STATUSES:
         raise exceptions.UnknownStatusExc(
-            'Неизвестный статус работы.'
+            f'Домашняя работа имеет неизвестный статус: {homework_status}.'
+            f'Доступные статусы: {HOMEWORK_STATUSES.keys()}'
         )
 
     verdict = HOMEWORK_STATUSES[homework_status]
