@@ -55,7 +55,7 @@ pip install -r requirements.txt
   Картинку-аватар (Edit Botpic);
   Команды (Edit Commands) — подсказки для ввода команд.
 
-7. Получить токен Яндекс.Практикума [тут](https://oauth.yandex.ru/authorize?response_type=token&client_id=1d0b9dd4d652455a9eb710d450ff456a)
+7. Получить [токен Яндекс.Практикума](https://oauth.yandex.ru/authorize?response_type=token&client_id=1d0b9dd4d652455a9eb710d450ff456a)
 
 8. Создать '.env' файл с токенами:
 ```
